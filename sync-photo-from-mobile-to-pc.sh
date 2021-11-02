@@ -7,7 +7,9 @@
 #
 #############################################################
 
-me=home
+dry_run=$1
+
+me=office
 phone=Honor
 
 # me=chang
@@ -18,13 +20,18 @@ from_camera="$me:~/storage/dcim/Camera/"
 to_photo=~/$phone/Photo
 to_video=~/$phone/Video/
 
-from_weinxin="$me:~/storage/shared/tencent/MicroMsg/WeiXin/"
+# from_weinxin="$me:~/storage/shared/tencent/MicroMsg/WeiXin/"
+from_weinxin="$me:~/storage/pictures/WeiXin/"
 to_weixin_photo=~/$phone/WeiXin/Photo
 to_weixin_video=~/$phone/WeiXin/Video
 
 
 from_voice="$me:~/storage/shared/WXVExporter/"
 to_voice=~/Honor/mp3
+
+
+from_recording="$me:~/storage/music/Recordings/"
+to_recording=~/Honor/Recordings
 
 # -m ignore empty folder
 # -n --dry-run
@@ -34,8 +41,12 @@ to_voice=~/Honor/mp3
 # -u --update
 # -stats give some file-transfer stats
 
-# options="-avhPm --size-only --stats "
-options="-avhPnm --size-only --stats " # dry-run
+if [ "${dry_run}" == "run" ]; then
+  options="-avhPm --size-only --stats "
+else
+  echo "dry run"
+  options="-avhPnm --size-only --stats " # dry-run
+fi
 
 echo "------------- Rsync Photo ----------------"
 
@@ -45,39 +56,48 @@ echo "------------- Rsync Photo ----------------"
 # rsync ${options} --compare-dest=$to_photo/2017 --compare-dest=$to_photo/2018 --compare-dest=$to_photo/2019 --compare-dest=$to_photo/2020 --include="*.jpg" --exclude="*" --exclude-from="/Users/liyujian/github/lyj289/scripts/names.txt" $from_camera $to_photo
 
 # Use exclude file
-current_dir=`dirname $0`
-name_file=$current_dir/names.txt
+# current_dir=`dirname $0`
+# name_file=$current_dir/names.txt
 
-rsync -ahuPnm --size-only --stats \
-  --exclude-from=$name_file \
-  --include="IMG_2020*.jpg" \
-  --exclude="*" \
-  home:~/storage/dcim/Camera/ ~/Honor/Photo
+# rsync -ahuPnm --size-only --stats \
+#   --exclude-from=$name_file \
+#   --include="IMG_2020*.jpg" \
+#   --exclude="*" \
+#   home:~/storage/dcim/Camera/ ~/Honor/Photo
 
 # Use find grep
-# rsync ${options} \
-  # home:'$(find ./storage/dcim/Camera/ -name "IMG_2020*.jpg" -mtime -30)' ~/Honor/Photo
+rsync ${options} \
+  $me:'$(find ./storage/dcim/Camera/ -name "IMG2021*.jpg" -mtime -365)' ~/Honor/Photo/2021
 
-echo ""
-  # --include="IMG_2020*.jpg" \
+# For u pan
+# rsync ${options} --include="*.jpg" --exclude="*" $from_camera $to_photo
 
-# echo "------------- Rsync Photo Video ----------------"
-# rsync ${options} --include="*.mp4" --include="*/" --exclude="*" $from_camera $to_video
-# echo ""
+echo "\n"
 
-# echo "------------- Rsync Weixin Video ----------------"
-# rsync ${options} --include="*.mp4" --include="*/" --exclude="*" $from_weinxin $to_weixin_video
-# echo ""
+echo "------------- Rsync Photo Video ----------------"
+rsync ${options} --include="*.mp4" --include="*/" --exclude="*" $from_camera $to_video
+echo "\n"
 
-# echo "------------- Rsync Weixin Photo ----------------"
-# rsync ${options} --include="*.jpg" --include="*/" --exclude="*" $from_weinxin $to_weixin_photo
-# echo ""
+echo "------------- Rsync Weixin Video ----------------"
+rsync ${options} --include="*.mp4" --include="*/" --exclude="*" $from_weinxin $to_weixin_video
+echo "\n"
+
+echo "------------- Rsync Weixin Photo ----------------"
+rsync ${options} --include="*.jpg" --include="*/" --exclude="*" $from_weinxin $to_weixin_photo
+echo "\n"
+
+echo "------------- Rsync Voice ----------------"
+rsync ${options} --include="*.mp3" --include="*/" --exclude="*" $from_voice $to_voice
+echo "\n"
 
 
+echo "------------- Rsync Recordings ----------------"
+rsync ${options} $from_recording $to_recording
+echo "\n"
 
-# echo "------------- Rsync Voice ----------------"
-# rsync ${options} --include="*.mp3" --include="*/" --exclude="*" $from_voice $to_voice
-# echo ""
+
+# find the trashed files and remove
+# fd --hidden --no-ignore '.trashed' -x rm
 
 # https://rsync.samba.org/examples.html#Fancy footwork with remote file lists
 # echo "------------- Rsync Origin Voice ----------------"
