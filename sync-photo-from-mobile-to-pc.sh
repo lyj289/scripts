@@ -9,7 +9,7 @@
 
 dry_run=$1
 
-me=office
+me=home
 phone=Honor
 
 # me=chang
@@ -30,7 +30,7 @@ from_voice="$me:~/storage/shared/WXVExporter/"
 to_voice=~/Honor/mp3
 
 
-from_recording="$me:~/storage/music/Recordings/"
+from_recording=$me:"'~/storage/music/Recordings/Standard\\ Recordings'"
 to_recording=~/Honor/Recordings
 
 # -m ignore empty folder
@@ -67,7 +67,7 @@ echo "------------- Rsync Photo ----------------"
 
 # Use find grep
 rsync ${options} \
-  $me:'$(find ./storage/dcim/Camera/ -name "IMG2021*.jpg" -mtime -365)' ~/Honor/Photo/2021
+  $me:'$(find ./storage/dcim/Camera/ -name "IMG2022*.jpg" -mtime -365)' ~/Honor/Photo/2022
 
 # For u pan
 # rsync ${options} --include="*.jpg" --exclude="*" $from_camera $to_photo
@@ -92,7 +92,7 @@ echo "\n"
 
 
 echo "------------- Rsync Recordings ----------------"
-rsync ${options} $from_recording $to_recording
+echo rsync ${options} $from_recording $to_recording
 echo "\n"
 
 
