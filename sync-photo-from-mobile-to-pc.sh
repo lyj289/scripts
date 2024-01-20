@@ -20,8 +20,18 @@ from_camera="$me:~/storage/dcim/Camera/"
 to_photo=~/$phone/Photo
 to_video=~/$phone/Video/
 
-# from_weinxin="$me:~/storage/shared/tencent/MicroMsg/WeiXin/"
-from_weinxin="$me:~/storage/pictures/WeiXin/"
+
+from_camera_albums="$me:~/storage/dcim/MyAlbums/"
+to_photo_albums=~/$phone/MyAlbums
+
+# from_weixin="$me:~/storage/shared/tencent/MicroMsg/WeiXin/"
+from_weixin_old="$me:~/storage/shared/tencent/MicroMsg/WeiXinOld/"
+to_weixin_old=~/$phone/WeiXinOld
+
+# Start from 230617 WeChat folder is used, while before is Weixin in pictures,
+# before 202006 the tencent/MicroMsg/Weixin
+from_weixin="$me:~/storage/pictures/WeiXin/"
+from_wechat="$me:~/storage/pictures/WeChat/" # latest
 to_weixin_photo=~/$phone/WeiXin/Photo
 to_weixin_video=~/$phone/WeiXin/Video
 
@@ -67,36 +77,58 @@ echo "------------- Rsync Photo ----------------"
 
 # Use find grep
 rsync ${options} \
-  $me:'$(find ./storage/dcim/Camera/ -name "IMG2022*.jpg" -mtime -365)' ~/Honor/Photo/2022
+  $me:'$(find ./storage/dcim/Camera/ -name "IMG2024*.jpg" -mtime -365)' ~/Honor/Photo/2024
 
 # For u pan
 # rsync ${options} --include="*.jpg" --exclude="*" $from_camera $to_photo
 
 echo "\n"
 
+echo "------------- Rsync Albums Photo ----------------"
+# Delete the hidden trashed file
+# fd -H trashed ./ -X rm
+rsync -r ${options} $from_camera_albums $to_photo_albums
+echo "\n"
+
 echo "------------- Rsync Photo Video ----------------"
 rsync ${options} --include="*.mp4" --include="*/" --exclude="*" $from_camera $to_video
 echo "\n"
 
+# echo "------------- Rsync Weixin old Photo Video ----------------"
+# rsync -r ${options} $from_weixin_old $to_weixin_old
+# echo "\n"
+
+echo "------------- Rsync Screenshots ----------------"
+# after 202208 pictures/Screenshots is used, before is dcim/Screenshots
+rsync ${options} --include="*.jpg" $me:~/storage/pictures/Screenshots ~/$phone/
+# rsync ${options} --include="*.jpg" $me:~/storage/dcim/Screenshots ~/$phone/
+
 echo "------------- Rsync Weixin Video ----------------"
-rsync ${options} --include="*.mp4" --include="*/" --exclude="*" $from_weinxin $to_weixin_video
+# echo '--weixin\n'
+# rsync ${options} --include="*.mp4" --include="*/" --exclude="*" $from_weixin $to_weixin_video
+echo '--wechat video \n'
+rsync ${options} --include="*.mp4" --include="*/" --exclude="*" $from_wechat $to_weixin_video
 echo "\n"
 
 echo "------------- Rsync Weixin Photo ----------------"
-rsync ${options} --include="*.jpg" --include="*/" --exclude="*" $from_weinxin $to_weixin_photo
+# echo '--weixin\n'
+# rsync ${options} --include="*.jpg" --include="*/" --exclude="*" $from_weixin $to_weixin_photo
+echo '--wechat photo \n'
+rsync ${options} --include="*.jpg" --include="*/" --exclude="*" $from_wechat $to_weixin_photo
 echo "\n"
 
-echo "------------- Rsync Voice ----------------"
-rsync ${options} --include="*.mp3" --include="*/" --exclude="*" $from_voice $to_voice
-echo "\n"
+# echo "------------- Rsync Voice ----------------"
+# rsync ${options} --include="*.mp3" --include="*/" --exclude="*" $from_voice $to_voice
+# echo "\n"
 
 
 echo "------------- Rsync Recordings ----------------"
-echo rsync ${options} $from_recording $to_recording
+# echo rsync ${options} $from_recording $to_recording
 echo "\n"
 
 
 # find the trashed files and remove
+# fd -H trashed ./ -X rm
 # fd --hidden --no-ignore '.trashed' -x rm
 
 # https://rsync.samba.org/examples.html#Fancy footwork with remote file lists

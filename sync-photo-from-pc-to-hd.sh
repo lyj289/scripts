@@ -41,7 +41,7 @@ echo "\n"
 
 echo "------------- Rsync Photo ----------------"
 
-rsync ${options} --include="*.jpg" --exclude="*" ${from}/Photo/2022/ ${to}/Photo/2022
+rsync ${options} --include="*.jpg" --exclude="*" ${from}/Photo/2023/ ${to}/Photo/2023
 
 echo "\n"
 
