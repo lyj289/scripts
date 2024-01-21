@@ -41,9 +41,17 @@ echo "\n"
 
 echo "------------- Rsync Photo ----------------"
 
-rsync ${options} --include="*.jpg" --exclude="*" ${from}/Photo/2023/ ${to}/Photo/2023
+rsync ${options} --include="*.jpg" --exclude="*" ${from}/Photo/2024/ ${to}/Photo/2024
+rsync ${options} --include="*.jpg" --exclude="*" ${from}/Screenshots/ ${to}/Screenshots
 
 echo "\n"
+
+echo "------------- Rsync MyAlbums ----------------"
+
+rsync ${options} ${from}/MyAlbums/ ${to}/MyAlbums
+
+echo "\n"
+
 
 echo "------------- Rsync Video ----------------"
 
@@ -58,3 +66,7 @@ rsync ${options} ${from}/mp3/ ${to}/mp3
 rsync ${options} ${from}/Recordings/ ${to}/Recordings
 
 echo "\n"
+
+rsync ${options} --exclude="node_modules" --exclude=".git" --exclude=".DS_Store" \
+ ~/deepmap/code/xelha ws:~/dcode/
+
